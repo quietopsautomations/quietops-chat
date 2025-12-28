@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>QuietOps Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .chat-box {
+      width: 360px;
+      height: 520px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-header {
+      padding: 12px;
+      background: #111827;
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+    .message {
+      margin-bottom: 10px;
+    }
+    .bot {
+      color: #111827;
+    }
+    .user {
+      color: #2563eb;
+      text-align: right;
+    }
+    .buttons {
+      margin-top: 6px;
+    }
+    .buttons button,
+    .buttons a {
+      margin: 4px 4px 0 0;
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 4px;
+      border: none;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .buttons button {
+      background: #e5e7eb;
+    }
+    .buttons a {
+      background: #10b981;
+      color: white;
+    }
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+    .chat-input button {
+      padding: 10px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-box">
+  <div class="chat-header">QuietOps Assistant</div>
+  <div class="chat-messages" id="messages"></div>
+  <div class="chat-input">
+    <input id="input" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+  const webhookUrl = "https://argcheeneh.app.n8n.cloud/webhook/quietops-chat";
+  let conversationState = "start";
+
+  function addMessage(text, sender) {
+    const div = document.createElement("div");
+    div.className = "message " + sender;
+    div.textContent = text;
+    document.getElementById("messages").appendChild(div);
+    div.scrollIntoView();
+  }
+
+  function addButtons(buttons) {
+    const container = document.createElement("div");
+    container.className = "buttons";
+
+    buttons.forEach(btn => {
+      const b = document.createElement("button");
+      b.textContent = btn.label;
+      b.onclick = () => sendMessage(btn.value);
+      container.appendChild(b);
+    });
+
+    document.getElementById("messages").appendChild(container);
+    container.scrollIntoView();
+  }
+
+  function addLinks(links) {
+    const container = document.createElement("div");
+    container.className = "buttons";
+
+    links.forEach(link => {
+      const a = document.createElement("a");
+      a.href = link.url;
+      a.textContent = link.label;
+      a.target = "_blank";
+      container.appendChild(a);
+    });
+
+    document.getElementById("messages").appendChild(container);
+    container.scrollIntoView();
+  }
+
+  async function sendMessage(text) {
+    const input = document.getElementById("input");
+    const message = text || input.value;
+    if (!message) return;
+
+    addMessage(message, "user");
+    input.value = "";
+
+    const res = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message,
+        state: conversationState
+      })
+    });
+
+    const raw = await res.json();
+
+    // 🔥 SAFETY PARSE
+    const data = typeof raw === "string" ? JSON.parse(raw) : raw;
+
+    if (data.state) conversationState = data.state;
+    if (data.reply) addMessage(data.reply, "bot");
+    if (data.buttons) addButtons(data.buttons);
+    if (data.links) addLinks(data.links);
+  }
+
+  // Start conversation
+  sendMessage("hello");
+</script>
+
+</body>
+</html>

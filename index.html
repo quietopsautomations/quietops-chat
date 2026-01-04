@@ -113,20 +113,42 @@
     div.scrollIntoView();
   }
 
-  function addButtons(buttons) {
-    const container = document.createElement("div");
-    container.className = "buttons";
+function addButtons(buttons) {
+  const container = document.createElement("div");
+  container.className = "buttons";
 
-    buttons.forEach(btn => {
-      const b = document.createElement("button");
-      b.textContent = btn.label;
-      b.onclick = () => sendMessage(btn.value);
-      container.appendChild(b);
-    });
+  buttons.forEach(btn => {
 
-    document.getElementById("messages").appendChild(container);
-    container.scrollIntoView();
-  }
+    // LINK BUTTON (opens URL)
+    if (btn.url) {
+      const a = document.createElement("a");
+      a.href = btn.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = btn.label;
+      a.style.display = "inline-block";
+      a.style.margin = "4px 4px 0 0";
+      a.style.padding = "6px 10px";
+      a.style.fontSize = "13px";
+      a.style.borderRadius = "4px";
+      a.style.background = "#2563eb";
+      a.style.color = "#fff";
+      a.style.textDecoration = "none";
+      container.appendChild(a);
+      return;
+    }
+
+    // NORMAL CHAT BUTTON
+    const b = document.createElement("button");
+    b.textContent = btn.label;
+    b.onclick = () => sendMessage(btn.value);
+    container.appendChild(b);
+  });
+
+  document.getElementById("messages").appendChild(container);
+  container.scrollIntoView();
+}
+
 
   async function sendMessage(text) {
     const input = document.getElementById("input");
@@ -167,5 +189,6 @@
 
 </body>
 </html>
+
 
 

@@ -4,103 +4,119 @@
   <meta charset="UTF-8" />
   <title>Mehrops Assistant</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+<style>
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0b0f1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
 
-    .chat-box {
-      width: 360px;
-      height: 520px;
-      background: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.15);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+  .chat-box {
+    width: 360px;
+    height: 540px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-    .chat-header {
-      padding: 12px;
-      background: #111827;
-      color: #ffffff;
-      text-align: center;
-      font-weight: bold;
-    }
+  .chat-header {
+    padding: 14px;
+    background: linear-gradient(135deg, #5b7cfa, #8fa3ff);
+    color: #ffffff;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+  }
 
-    .chat-messages {
-      flex: 1;
-      padding: 12px;
-      overflow-y: auto;
-      font-size: 14px;
-    }
+  .chat-messages {
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+    background: #f9fafb;
+    font-size: 14px;
+  }
 
-    .message {
-      margin-bottom: 10px;
-    }
+  .message {
+    margin-bottom: 10px;
+    max-width: 85%;
+    line-height: 1.4;
+  }
 
-    .bot {
-      color: #111827;
-    }
+  .bot {
+    background: #ffffff;
+    color: #111827;
+    padding: 10px 14px;
+    border-radius: 14px 14px 14px 4px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  }
 
-    .user {
-      color: #2563eb;
-      text-align: right;
-    }
+  .user {
+    background: #2563eb;
+    color: #ffffff;
+    padding: 10px 14px;
+    border-radius: 14px 14px 4px 14px;
+    margin-left: auto;
+    text-align: right;
+  }
 
-    .buttons {
-      margin-top: 6px;
-    }
+  .buttons {
+    margin-top: 6px;
+  }
 
-    .buttons button,
-    .buttons a {
-      display: inline-block;
-      margin: 6px 6px 0 0;
-      padding: 8px 12px;
-      font-size: 13px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-    }
+  .buttons button,
+  .buttons a {
+    display: inline-block;
+    margin: 6px 6px 0 0;
+    padding: 8px 14px;
+    font-size: 13px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+  }
 
-    .buttons button {
-      background: #e5e7eb;
-      color: #111827;
-    }
+  .buttons button {
+    background: #e5e7eb;
+    color: #111827;
+  }
 
-    .buttons a {
-      background: #2563eb;
-      color: #ffffff;
-    }
+  .buttons a {
+    background: #2563eb;
+    color: #ffffff;
+  }
 
-    .chat-input {
-      display: flex;
-      border-top: 1px solid #ddd;
-    }
+  .chat-input {
+    display: flex;
+    border-top: 1px solid #e5e7eb;
+    background: #ffffff;
+  }
 
-    .chat-input input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      outline: none;
-      font-size: 14px;
-    }
+  .chat-input input {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+  }
 
-    .chat-input button {
-      padding: 10px 14px;
-      background: #2563eb;
-      color: #ffffff;
-      border: none;
-      cursor: pointer;
-    }
-  </style>
+  .chat-input button {
+    padding: 12px 16px;
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+  }
+</style>
+
 </head>
 
 <body>
@@ -207,3 +223,4 @@
 
 </body>
 </html>
+

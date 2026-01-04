@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Mehrops Chat</title>
+  <title>Mehrops Assistant</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,29 +12,31 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
     }
 
     .chat-box {
       width: 360px;
       height: 520px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.15);
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
     .chat-header {
       padding: 12px;
       background: #111827;
-      color: #fff;
+      color: #ffffff;
       text-align: center;
       font-weight: bold;
     }
 
     .chat-messages {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       overflow-y: auto;
       font-size: 14px;
     }
@@ -55,14 +58,26 @@
       margin-top: 6px;
     }
 
-    .buttons button {
-      margin: 4px 4px 0 0;
-      padding: 6px 10px;
+    .buttons button,
+    .buttons a {
+      display: inline-block;
+      margin: 6px 6px 0 0;
+      padding: 8px 12px;
       font-size: 13px;
-      cursor: pointer;
-      border-radius: 4px;
+      border-radius: 6px;
       border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .buttons button {
       background: #e5e7eb;
+      color: #111827;
+    }
+
+    .buttons a {
+      background: #2563eb;
+      color: #ffffff;
     }
 
     .chat-input {
@@ -79,9 +94,9 @@
     }
 
     .chat-input button {
-      padding: 10px;
+      padding: 10px 14px;
       background: #2563eb;
-      color: #fff;
+      color: #ffffff;
       border: none;
       cursor: pointer;
     }
@@ -92,7 +107,9 @@
 
 <div class="chat-box">
   <div class="chat-header">Mehrops Assistant</div>
+
   <div class="chat-messages" id="messages"></div>
+
   <div class="chat-input">
     <input id="input" placeholder="Type a message..." />
     <button onclick="sendMessage()">Send</button>
@@ -110,45 +127,38 @@
     div.className = "message " + sender;
     div.textContent = text;
     document.getElementById("messages").appendChild(div);
-    div.scrollIntoView();
+    div.scrollIntoView({ behavior: "smooth" });
   }
 
-function addButtons(buttons) {
-  const container = document.createElement("div");
-  container.className = "buttons";
+  function addButtons(buttons) {
+    const container = document.createElement("div");
+    container.className = "buttons";
 
-  buttons.forEach(btn => {
+    buttons.forEach(btn => {
 
-    // LINK BUTTON (opens URL)
-    if (btn.url) {
-      const a = document.createElement("a");
-      a.href = btn.url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      a.textContent = btn.label;
-      a.style.display = "inline-block";
-      a.style.margin = "4px 4px 0 0";
-      a.style.padding = "6px 10px";
-      a.style.fontSize = "13px";
-      a.style.borderRadius = "4px";
-      a.style.background = "#2563eb";
-      a.style.color = "#fff";
-      a.style.textDecoration = "none";
-      container.appendChild(a);
-      return;
-    }
+      // ✅ URL BUTTON (opens link)
+      if (btn.url) {
+        const a = document.createElement("a");
+        a.href = btn.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = btn.label;
+        container.appendChild(a);
+        return;
+      }
 
-    // NORMAL CHAT BUTTON
-    const b = document.createElement("button");
-    b.textContent = btn.label;
-    b.onclick = () => sendMessage(btn.value);
-    container.appendChild(b);
-  });
+      // ✅ NORMAL CHAT BUTTON
+      if (btn.value) {
+        const b = document.createElement("button");
+        b.textContent = btn.label;
+        b.onclick = () => sendMessage(btn.value);
+        container.appendChild(b);
+      }
+    });
 
-  document.getElementById("messages").appendChild(container);
-  container.scrollIntoView();
-}
-
+    document.getElementById("messages").appendChild(container);
+    container.scrollIntoView({ behavior: "smooth" });
+  }
 
   async function sendMessage(text) {
     const input = document.getElementById("input");
@@ -158,37 +168,42 @@ function addButtons(buttons) {
     addMessage(message, "user");
     input.value = "";
 
-    const res = await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message,
-        state: conversationState,
-        name: leadName
-      })
-    });
+    try {
+      const res = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          state: conversationState,
+          name: leadName
+        })
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    // Store name locally when user just entered it
-    if (data.state === "awaiting_contact") {
-      leadName = message;
+      if (data.state) {
+        conversationState = data.state;
+      }
+
+      if (data.reply) {
+        addMessage(data.reply, "bot");
+      }
+
+      if (data.buttons) {
+        addButtons(data.buttons);
+      }
+
+    } catch (err) {
+      addMessage("Sorry — something went wrong. Please try again.", "bot");
+      console.error(err);
     }
-
-    if (data.state) {
-      conversationState = data.state;
-    }
-
-    if (data.reply) addMessage(data.reply, "bot");
-    if (data.buttons) addButtons(data.buttons);
   }
 
-  // Auto start
-  sendMessage("hello");
+  // Auto start conversation
+  window.onload = () => {
+    sendMessage("hello");
+  };
 </script>
 
 </body>
 </html>
-
-
-
